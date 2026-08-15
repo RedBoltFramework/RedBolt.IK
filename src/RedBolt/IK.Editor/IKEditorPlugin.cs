@@ -11,36 +11,19 @@ namespace RedBolt.IK.Editor;
 
 using System;
 
-using RedBolt.Core;
 using RedBolt.Editor.Core;
-using RedBolt.Plugins;
 using RedBolt.Utility;
 
 using EditorProject = RedBolt.Editor.Project.Project;
 
 /// <summary>Developer-only IK reflection and asset-pipeline integration for the standard RedBolt Editor.</summary>
-public sealed class IKEditorPlugin : PluginApplication
+public sealed class IKEditorPlugin : EditorPluginApplication
 {
-    protected override void Load()
-    {
-        _ikReflection = Context.RegisterAssemblyScoped(typeof(IKSolver).Assembly);
-        _toolsReflection = Context.RegisterAssemblyScoped(typeof(RetargetAnimationsTransformer).Assembly);
-        _registration = GetSubsystem<EditorPluginManager>().AddScopedPlugin<EditorProject>(
-            "IK.DefaultRetargetTransformer",
-            static project => project.RegisterDefaultAssetTransformer<RetargetAnimationsTransformer>());
-    }
+}
 
-    protected override void Unload()
-    {
-        _registration?.Dispose();
-        _registration = null;
-        _toolsReflection?.Dispose();
-        _toolsReflection = null;
-        _ikReflection?.Dispose();
-        _ikReflection = null;
-    }
-
-    private IDisposable? _registration;
-    private AssemblyRegistration? _toolsReflection;
-    private AssemblyRegistration? _ikReflection;
+[EditorExtension("IK.DefaultRetargetTransformer")]
+internal static class IKDefaultRetargetTransformerExtension
+{
+    public static IDisposable Apply(EditorProject project) =>
+        project.RegisterDefaultAssetTransformer<RetargetAnimationsTransformer>();
 }
