@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>RedBolt.IK.Sample.Android</AssemblyName>
+    <ApplicationId>org.redbolt.ik.samples</ApplicationId>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../IK/RedBolt.IK.csproj" />
+    <ProjectReference Include="$(RedBoltRoot)/src/RedBolt/DearImGui/RedBolt.DearImGui.csproj" />
+    <Compile Include="../InverseKinematics/**/*.cs" Link="Samples/%(RecursiveDir)%(Filename)%(Extension)" />
+    <AndroidAsset Include="$(RedBoltIKRoot)/bin/Data/**/*" Link="Data/%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+  <Import Project="$(RedBoltRoot)/src/RedBolt/Build/AndroidSample.targets" />
+</Project>

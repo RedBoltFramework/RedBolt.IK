@@ -1,0 +1,6 @@
+<Project>
+  <ItemGroup>
+    <RedBoltExternalTestModule Include="$(RedBoltIKRoot)" HasNative="false" />
+  </ItemGroup>
+  <Import Project="$(RedBoltRoot)/src/RedBolt/Build/TestIntegration.targets" Condition="'$(RedBoltExternalTestIntegrationImported)' != 'true'" />
+</Project>

@@ -1,0 +1,21 @@
+<Project>
+  <PropertyGroup>
+    <RedBoltIKRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..'))</RedBoltIKRoot>
+    <RedBoltRoot Condition="'$(RedBoltRoot)' == ''">$([System.IO.Path]::GetFullPath('$(RedBoltIKRoot)/../RedBolt'))</RedBoltRoot>
+    <RedBoltDearImGuiEnabled>true</RedBoltDearImGuiEnabled>
+    <RedBoltUtilityEnabled>true</RedBoltUtilityEnabled>
+    <RedBoltEditorEnabled>true</RedBoltEditorEnabled>
+    <RedBoltExternalModuleRoot>$(RedBoltIKRoot)</RedBoltExternalModuleRoot>
+    <RedBoltExternalModuleName>RedBolt.IK</RedBoltExternalModuleName>
+    <RedBoltExternalBuildProjectName>RedBolt.IK.Build</RedBoltExternalBuildProjectName>
+    <RedBoltExternalModuleProjectNames>RedBolt.IK;RedBolt.IK.Tools;RedBolt.IK.Editor</RedBoltExternalModuleProjectNames>
+    <RedBoltExternalHasNative>false</RedBoltExternalHasNative>
+    <RedBoltExternalUsesDearImGui>true</RedBoltExternalUsesDearImGui>
+    <RedBoltExternalDesktopResourceRoot>$(RedBoltIKRoot)</RedBoltExternalDesktopResourceRoot>
+  </PropertyGroup>
+  <Import Project="$(RedBoltRoot)/src/RedBolt/Build/Directory.Build.props" />
+  <PropertyGroup>
+    <RedBoltExternalModuleEnabled>$(RedBoltIKEnabled)</RedBoltExternalModuleEnabled>
+    <RedBoltExternalModuleBuildProperties>RedBoltIKEnabled=$(RedBoltIKEnabled)</RedBoltExternalModuleBuildProperties>
+  </PropertyGroup>
+</Project>

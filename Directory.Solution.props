@@ -1,0 +1,9 @@
+<Project>
+  <PropertyGroup>
+    <RedBoltIKRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory).'))</RedBoltIKRoot>
+    <RedBoltRoot Condition="'$(RedBoltRoot)' == ''">$([System.IO.Path]::GetFullPath('$(RedBoltIKRoot)/../RedBolt'))</RedBoltRoot>
+    <RedBoltExternalModuleRoot>$(RedBoltIKRoot)</RedBoltExternalModuleRoot>
+    <RedBoltExternalModuleName>RedBolt.IK</RedBoltExternalModuleName>
+  </PropertyGroup>
+  <Import Project="$(RedBoltRoot)/src/RedBolt/Build/Directory.Solution.props" />
+</Project>

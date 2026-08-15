@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/RedBolt/Build/">
+    <Project Path="src/RedBolt/Build/RedBolt.IK.Build.csproj" />
+  </Folder>
+  <Folder Name="/src/RedBolt/">
+    <Project Path="src/RedBolt/IK/RedBolt.IK.csproj"><Build Project="false" /></Project>
+    <Project Path="src/RedBolt/IK.Tools/RedBolt.IK.Tools.csproj"><Build Project="false" /></Project>
+    <Project Path="src/RedBolt/IK.Editor/RedBolt.IK.Editor.csproj"><Build Project="false" /></Project>
+  </Folder>
+  <Folder Name="/src/RedBolt/Sample/">
+    <Project Path="src/RedBolt/Sample/InverseKinematics/RedBolt.Sample.InverseKinematics.csproj"><Build Project="false" /></Project>
+    <Project Path="src/RedBolt/Sample/Web/RedBolt.Sample.Web.csproj"><Build Project="false" /></Project>
+    <Project Path="src/RedBolt/Sample/Android/RedBolt.Sample.Android.csproj"><Build Project="false" /></Project>
+  </Folder>
+</Solution>

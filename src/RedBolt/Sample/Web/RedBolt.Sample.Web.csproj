@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+  <ItemGroup>
+    <ProjectReference Include="../../IK/RedBolt.IK.csproj" />
+    <ProjectReference Include="$(RedBoltRoot)/src/RedBolt/DearImGui/RedBolt.DearImGui.csproj" />
+    <Compile Include="../InverseKinematics/**/*.cs" Link="Samples/%(RecursiveDir)%(Filename)%(Extension)" />
+    <RedBoltWebDataResource Include="$(RedBoltIKRoot)/bin/Data/**/*" />
+  </ItemGroup>
+  <Import Project="$(RedBoltRoot)/src/RedBolt/Build/WebSample.targets" />
+</Project>

@@ -1,0 +1,9 @@
+namespace RedBolt.Sample.Android;
+
+internal static class SampleCatalog
+{
+    internal static readonly SampleEntry[] Entries =
+    [
+        new("inverse-kinematics", "Inverse Kinematics", static () => new global::RedBolt.Sample.InverseKinematics.InverseKinematicsApplication()),
+    ];
+}
