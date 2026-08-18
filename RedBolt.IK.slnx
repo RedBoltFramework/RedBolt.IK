@@ -5,17 +5,14 @@ For a copy, see <https://opensource.org/licenses/MIT> or the accompanying LICENS
 -->
 
 <Solution>
-  <Folder Name="/src/RedBolt/Build/">
-    <Project Path="src/RedBolt/Build/RedBolt.IK.Build.csproj" />
-  </Folder>
   <Folder Name="/src/RedBolt/">
-    <Project Path="src/RedBolt/IK/RedBolt.IK.csproj"><Build Project="false" /></Project>
-    <Project Path="src/RedBolt/IK.Tools/RedBolt.IK.Tools.csproj"><Build Project="false" /></Project>
-    <Project Path="src/RedBolt/IK.Editor/RedBolt.IK.Editor.csproj"><Build Project="false" /></Project>
+    <Project Path="src/RedBolt/IK/RedBolt.IK.csproj" />
+    <Project Path="src/RedBolt/IK.Tools/RedBolt.IK.Tools.csproj" />
+    <Project Path="src/RedBolt/IK.Editor/RedBolt.IK.Editor.csproj" />
   </Folder>
   <Folder Name="/src/RedBolt/Sample/">
-    <Project Path="src/RedBolt/Sample/InverseKinematics/RedBolt.Sample.InverseKinematics.csproj"><Build Project="false" /></Project>
-    <Project Path="src/RedBolt/Sample/Web/RedBolt.Sample.Web.csproj"><Build Project="false" /></Project>
-    <Project Path="src/RedBolt/Sample/Android/RedBolt.Sample.Android.csproj"><Build Project="false" /></Project>
+    <Project Path="src/RedBolt/Sample/InverseKinematics/RedBolt.Sample.InverseKinematics.csproj" />
+    <Project Path="src/RedBolt/Sample/Web/RedBolt.Sample.Web.csproj" />
+    <Project Path="src/RedBolt/Sample/Android/RedBolt.Sample.Android.csproj" />
   </Folder>
 </Solution>
