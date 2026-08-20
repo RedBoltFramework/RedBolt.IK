@@ -11,5 +11,5 @@ For a copy, see <https://opensource.org/licenses/MIT> or the accompanying LICENS
     <Compile Include="../InverseKinematics/**/*.cs" Link="Samples/%(RecursiveDir)%(Filename)%(Extension)" />
     <RedBoltWebDataResource Include="$(RedBoltIKRoot)/bin/Data/**/*" />
   </ItemGroup>
-  <Import Project="$(RedBoltRoot)/src/RedBolt/Build/WebSample.targets" />
+  <Import Project="$(RedBoltRoot)/eng/RedBolt.ModuleBuild/WebSample.targets" />
 </Project>

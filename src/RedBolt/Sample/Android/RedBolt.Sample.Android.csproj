@@ -15,5 +15,5 @@ For a copy, see <https://opensource.org/licenses/MIT> or the accompanying LICENS
     <Compile Include="../InverseKinematics/**/*.cs" Link="Samples/%(RecursiveDir)%(Filename)%(Extension)" />
     <AndroidAsset Include="$(RedBoltIKRoot)/bin/Data/**/*" Link="Data/%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
-  <Import Project="$(RedBoltRoot)/src/RedBolt/Build/AndroidSample.targets" />
+  <Import Project="$(RedBoltRoot)/eng/RedBolt.ModuleBuild/AndroidSample.targets" />
 </Project>

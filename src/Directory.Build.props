@@ -5,21 +5,16 @@ For a copy, see <https://opensource.org/licenses/MIT> or the accompanying LICENS
 -->
 
 <Project>
+  <!--
+    Module project evaluation. Managed-only module with an editor.
+  -->
   <PropertyGroup>
     <RedBoltIKRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..'))</RedBoltIKRoot>
     <RedBoltRoot Condition="'$(RedBoltRoot)' == ''">$([System.IO.Path]::GetFullPath('$(RedBoltIKRoot)/../RedBolt'))</RedBoltRoot>
-    <RedBoltDearImGuiEnabled>true</RedBoltDearImGuiEnabled>
-    <RedBoltUtilityEnabled>true</RedBoltUtilityEnabled>
-    <RedBoltEditorEnabled>true</RedBoltEditorEnabled>
     <RedBoltExternalModuleRoot>$(RedBoltIKRoot)</RedBoltExternalModuleRoot>
     <RedBoltExternalModuleName>RedBolt.IK</RedBoltExternalModuleName>
-    <RedBoltExternalModuleProjectNames>RedBolt.IK;RedBolt.IK.Tools;RedBolt.IK.Editor</RedBoltExternalModuleProjectNames>
     <RedBoltExternalHasNative>false</RedBoltExternalHasNative>
-    <RedBoltExternalUsesDearImGui>true</RedBoltExternalUsesDearImGui>
     <RedBoltExternalDesktopResourceRoot>$(RedBoltIKRoot)</RedBoltExternalDesktopResourceRoot>
   </PropertyGroup>
-  <Import Project="$(RedBoltRoot)/src/RedBolt/Build/Directory.Build.props" />
-  <PropertyGroup>
-    <RedBoltExternalModuleEnabled>$(RedBoltIKEnabled)</RedBoltExternalModuleEnabled>
-  </PropertyGroup>
+  <Import Project="$(RedBoltRoot)/eng/RedBolt.ModuleBuild/Directory.Build.props" />
 </Project>
