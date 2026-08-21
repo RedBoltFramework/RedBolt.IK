@@ -47,7 +47,7 @@ sealed class InverseKinematicsApplication : Application
         parameters.ApplicationName = "RedBolt.Sample.InverseKinematics";
         parameters.Borderless = false;
         parameters.FullScreen = false;
-        parameters.ResourcePaths = "Data;Base/CoreData;Base/Data";
+        parameters.ResourcePaths = "Data.IK;CoreData;Data";
         parameters.ResourcePrefixPaths = ".;..";
         parameters.WindowMaximize = false;
 #if !REDBOLT_PLATFORM_BROWSER

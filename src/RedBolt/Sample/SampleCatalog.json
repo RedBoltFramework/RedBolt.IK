@@ -8,7 +8,7 @@
     "../RedBolt/src/RedBolt/DearImGui/RedBolt.DearImGui.csproj"
   ],
   "data": [
-    "bin/Data/**/*"
+    "bin/Data.IK/**/*"
   ],
   "samples": [
     { "id": "inverse-kinematics", "name": "Inverse Kinematics", "applicationType": "RedBolt.Sample.InverseKinematics.InverseKinematicsApplication", "source": "InverseKinematics" }
