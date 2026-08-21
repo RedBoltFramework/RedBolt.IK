@@ -1,0 +1,16 @@
+{
+  "name": "RedBolt.IK",
+  "applicationId": "org.redbolt.ik.samples",
+  "web": true,
+  "android": true,
+  "projectReferences": [
+    "src/RedBolt/IK/RedBolt.IK.csproj",
+    "../RedBolt/src/RedBolt/DearImGui/RedBolt.DearImGui.csproj"
+  ],
+  "data": [
+    "bin/Data/**/*"
+  ],
+  "samples": [
+    { "id": "inverse-kinematics", "name": "Inverse Kinematics", "applicationType": "RedBolt.Sample.InverseKinematics.InverseKinematicsApplication", "source": "InverseKinematics" }
+  ]
+}
