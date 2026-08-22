@@ -17,3 +17,5 @@ dotnet build src/RedBolt/IK/RedBolt.IK.csproj \
 ```
 
 Use the same platform and architecture selection properties documented by the main RedBolt repository for Android, WebAssembly, and Windows builds.
+
+Each solution build records its active root in `build/BuildRoot.props`. Later direct project builds use the root selected by the last module or monorepo solution build.
