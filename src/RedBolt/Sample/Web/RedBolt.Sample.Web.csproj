@@ -17,7 +17,7 @@ For a copy, see <https://opensource.org/licenses/MIT> or the accompanying LICENS
     <ProjectReference Include="../../IK/RedBolt.IK.csproj" />
     <ProjectReference Include="../../../../../RedBolt/src/RedBolt/DearImGui/RedBolt.DearImGui.csproj" />
     <Compile Include="../InverseKinematics/**/*.cs" Link="Samples/RedBoltIK/InverseKinematics/%(RecursiveDir)%(Filename)%(Extension)" />
-    <RedBoltWebResourcePackage Include="RedBolt.IK.Data" SourceDirectory="../../../../bin/Data.IK" />
+    <RedBoltWebResourcePackage Include="RedBolt.IK.SampleData" SourceDirectory="../../../../bin/SampleData.IK" />
     <!-- </redbolt-generated name="web-project-items"> -->
   </ItemGroup>
   <!-- <redbolt-generated name="web-project-import"> -->

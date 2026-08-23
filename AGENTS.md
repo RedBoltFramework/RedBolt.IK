@@ -5,7 +5,7 @@
 - `src/RedBolt/IK` is the game-shipping runtime module and depends only on RedBolt Core.
 - `src/RedBolt/IK.Tools` contains developer-facing animation-retargeting utilities.
 - `src/RedBolt/IK.Editor` is the optional Editor companion and integrates through the RedBolt plugin system.
-- `src/RedBolt/Sample` and `bin/Data.IK` belong to this module.
+- `src/RedBolt/Sample` and `bin/SampleData.IK` belong to this module.
 
 Do not add an IK abstraction layer to RedBolt Core. Runtime consumers use `RedBolt.IK` directly, while Editor-only integration belongs in `RedBolt.IK.Editor`.
 

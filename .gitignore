@@ -24,8 +24,8 @@ extern/*/
 bin/
 !bin/
 bin/*
-!bin/Data/
-!bin/Data/**
+!bin/SampleData.IK/
+!bin/SampleData.IK/**
 obj/
 
 # Editor and OS noise.

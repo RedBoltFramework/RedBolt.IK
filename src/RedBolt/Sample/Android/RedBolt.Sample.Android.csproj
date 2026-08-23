@@ -18,7 +18,7 @@ For a copy, see <https://opensource.org/licenses/MIT> or the accompanying LICENS
     <ProjectReference Include="../../IK/RedBolt.IK.csproj" />
     <ProjectReference Include="../../../../../RedBolt/src/RedBolt/DearImGui/RedBolt.DearImGui.csproj" />
     <Compile Include="../InverseKinematics/**/*.cs" Link="Samples/RedBoltIK/InverseKinematics/%(RecursiveDir)%(Filename)%(Extension)" />
-    <AndroidAsset Include="../../../../bin/Data.IK/**/*" Link="Data/%(RecursiveDir)%(Filename)%(Extension)" />
+    <AndroidAsset Include="../../../../bin/SampleData.IK/**/*" Link="SampleData/%(RecursiveDir)%(Filename)%(Extension)" />
     <!-- </redbolt-generated name="android-project-items"> -->
   </ItemGroup>
   <!-- <redbolt-generated name="android-project-import"> -->
@@ -27,7 +27,7 @@ For a copy, see <https://opensource.org/licenses/MIT> or the accompanying LICENS
   <!-- <redbolt-generated name="android-project-targets"> -->
   <Target Name="RedBoltBuildAggregateAndroidNativeModules" BeforeTargets="RedBoltPrepareAndroidRuntime" Condition="'@(RedBoltAggregateAndroidNativeProject)' != ''">
     <MSBuild Projects="@(RedBoltAggregateAndroidNativeProject)" Targets="Restore;RedBoltPrepareAndroidRuntime" BuildInParallel="false"
-             Properties="Configuration=$(Configuration);RedBoltBuildRoot=$(RedBoltBuildRoot);RedBoltExpectedBuildRoot=$(RedBoltExpectedBuildRoot);RedBoltParallelization=$(RedBoltParallelization);RedBoltPlatform=$(RedBoltPlatform);RuntimeIdentifier=$(RuntimeIdentifier);RedBoltBuildAllAndroidPackages=false;MSBuildEnableWorkloadResolver=false" />
+             Properties="Configuration=$(Configuration);RedBoltBuildRoot=$(RedBoltBuildRoot);RedBoltExpectedBuildRoot=$(RedBoltExpectedBuildRoot);RedBoltPlatform=$(RedBoltPlatform);RuntimeIdentifier=$(RuntimeIdentifier);RedBoltBuildAllAndroidPackages=false;MSBuildEnableWorkloadResolver=false" />
   </Target>
   <!-- </redbolt-generated name="android-project-targets"> -->
 </Project>
