@@ -101,18 +101,20 @@ sealed class InverseKinematicsApplication : Application
         var characterNode = _scene.CreateChild("Character");
         characterNode.SetRotation(new Quaternion(180.0f, Vector3f.Up));
         var character = characterNode.CreateComponent<AnimatedModel>();
-        character.SetModel(cache.Get<Model>("Models/Mutant/Mutant.mdl"));
-        character.SetMaterial(cache.Get<Material>("Models/Mutant/Materials/mutant_M.xml"));
+        character.SetModel(cache.Get<Model>("ThirdParty/Quaternius/UniversalCharacter.glb.d/Models/Sphere.005_Retopology.004.mdl"));
+        character.SetMaterial(0, cache.Get<Material>("ThirdParty/Quaternius/UniversalCharacter.glb.d/Materials/MI_Superhero_Male_LitNormalMap.xml"));
+        character.SetMaterial(1, cache.Get<Material>("ThirdParty/Quaternius/UniversalCharacter.glb.d/Materials/MI_Hair_1_LitNormalMap.xml"));
+        character.SetMaterial(2, cache.Get<Material>("ThirdParty/Quaternius/UniversalCharacter.glb.d/Materials/MI_Eyes_LitNormalMap.xml"));
         character.SetCastShadows(true);
         characterNode.CreateComponent<IKSolver>();
 
-        CreateLimb(characterNode, "Mutant:LeftShoulder", "Mutant:LeftArm", "Mutant:LeftForeArm",
+        CreateLimb(characterNode, "clavicle_l", "upperarm_l", "lowerarm_l",
             "LeftHandTarget", "LeftElbowTarget");
-        CreateLimb(characterNode, "Mutant:RightArm", "Mutant:RightForeArm", "Mutant:RightHand",
+        CreateLimb(characterNode, "upperarm_r", "lowerarm_r", "hand_r",
             "RightHandTarget", "RightElbowTarget");
-        CreateLimb(characterNode, "Mutant:LeftUpLeg", "Mutant:LeftLeg", "Mutant:LeftFoot",
+        CreateLimb(characterNode, "thigh_l", "calf_l", "foot_l",
             "LeftFootTarget", "LeftKneeTarget");
-        CreateLimb(characterNode, "Mutant:RightUpLeg", "Mutant:RightLeg", "Mutant:RightFoot",
+        CreateLimb(characterNode, "thigh_r", "calf_r", "foot_r",
             "RightFootTarget", "RightKneeTarget");
 
         _cameraNode = _scene.CreateChild("Camera");
