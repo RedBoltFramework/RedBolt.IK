@@ -17,6 +17,7 @@ using RedBolt.IK;
 using RedBolt.Input;
 using RedBolt.Math;
 using RedBolt.Scene;
+using Widgets = RedBolt.SystemUI.Widgets;
 
 internal static class InverseKinematicsProgram
 {
@@ -30,11 +31,19 @@ internal static class InverseKinematicsProgram
 sealed class InverseKinematicsApplication : Application
 {
     private readonly List<Node> _handles = [];
+    private readonly List<IKLimbSolver> _limbSolvers = [];
+    private readonly Dictionary<Node, Node> _handleJoints = [];
+    private readonly Dictionary<Node, IKLimbSolver> _handleSolvers = [];
+    private readonly HashSet<Node> _effectorHandles = [];
     private Scene? _scene;
+    private Node? _characterNode;
+    private IKSolver? _ikSolver;
     private Node? _cameraNode;
     private Octree? _octree;
     private OutlineGroup? _outlineGroup;
     private Node? _draggedHandle;
+    private Vector3f _dragTargetPosition;
+    private Texture2D[]? _controlPrompts;
     private Plane _dragPlane;
 
     public InverseKinematicsApplication()
@@ -62,11 +71,20 @@ sealed class InverseKinematicsApplication : Application
         Context.RegisterSubsystem(new DearImGui((ImGuiConfigFlags)Engine.Parameters.DearImGuiFlags));
         SubscribeToEvent<DearImGuiEvents.EndRenderingDearImGuiEvent>(
             (ref DearImGuiEvents.EndRenderingDearImGuiEvent _) => DrawInstructions());
-        SubscribeToEvent<CoreEvents.PostRenderUpdateEvent>(
-            (ref CoreEvents.PostRenderUpdateEvent _) => Renderer.DrawDebugGeometry(false));
+        SubscribeToEvent<IKEvents.IKPostSolveEvent>(
+            (ref IKEvents.IKPostSolveEvent _) => OnIKPostSolve());
 
         CreateScene();
         Renderer.SetViewport(0, new Viewport(_scene!, _cameraNode!.GetComponent<Camera>()!));
+        _controlPrompts =
+        [
+            Resources.Get<Texture2D>("ThirdParty/KenneyInputPrompts/keyboard_w.png"),
+            Resources.Get<Texture2D>("ThirdParty/KenneyInputPrompts/keyboard_a.png"),
+            Resources.Get<Texture2D>("ThirdParty/KenneyInputPrompts/keyboard_s.png"),
+            Resources.Get<Texture2D>("ThirdParty/KenneyInputPrompts/keyboard_d.png"),
+            Resources.Get<Texture2D>("ThirdParty/KenneyInputPrompts/mouse_right.png"),
+            Resources.Get<Texture2D>("ThirdParty/KenneyInputPrompts/mouse_left.png")
+        ];
 
         Input.SetMouseMode(MouseMode.Free);
         Input.SetMouseVisible(true);
@@ -77,38 +95,39 @@ sealed class InverseKinematicsApplication : Application
         var cache = Resources;
         _scene = new Scene();
         _octree = _scene.CreateComponent<Octree>();
-        _scene.CreateComponent<DebugRenderer>();
         _outlineGroup = _scene.CreateComponent<OutlineGroup>();
         _outlineGroup.SetColor(Color.Yellow);
-
-        var planeNode = _scene.CreateChild("Plane");
-        planeNode.SetScale(new Vector3f(20.0f, 1.0f, 20.0f));
-        var plane = planeNode.CreateComponent<StaticModel>();
-        plane.SetModel(cache.Get<Model>("Models/Plane.mdl"));
-        plane.SetMaterial(cache.Get<Material>("Materials/StoneTiled.xml"));
 
         var zoneNode = _scene.CreateChild("Zone");
         var zone = zoneNode.CreateComponent<Zone>();
         zone.SetBoundingBox(new BoundingBox(-1000.0f, 1000.0f));
-        zone.SetAmbientColor(new Color(0.35f, 0.35f, 0.35f));
+        zone.SetAmbientColor(new Color(0.5f, 0.5f, 0.5f));
+        zone.SetFogColor(new Color(0.4f, 0.5f, 0.8f));
+        zone.SetFogStart(100.0f);
+        zone.SetFogEnd(300.0f);
 
         var lightNode = _scene.CreateChild("DirectionalLight");
         lightNode.SetDirection(new Vector3f(0.6f, -1.0f, 0.8f));
         var light = lightNode.CreateComponent<Light>();
         light.SetLightType(LightType.Directional);
         light.SetCastShadows(true);
+        light.SetColor(new Color(0.5f, 0.5f, 0.5f));
+        light.SetShadowBias(new BiasParameters(0.00025f, 0.5f));
+        light.SetShadowCascade(new CascadeParameters(10.0f, 50.0f, 200.0f, 0.0f, 0.8f));
 
         var characterNode = _scene.CreateChild("Character");
+        _characterNode = characterNode;
         characterNode.SetRotation(new Quaternion(180.0f, Vector3f.Up));
         var character = characterNode.CreateComponent<AnimatedModel>();
-        character.SetModel(cache.Get<Model>("ThirdParty/Quaternius/UniversalCharacter.glb.d/Models/Sphere.005_Retopology.004.mdl"));
-        character.SetMaterial(0, cache.Get<Material>("ThirdParty/Quaternius/UniversalCharacter.glb.d/Materials/MI_Superhero_Male_LitNormalMap.xml"));
-        character.SetMaterial(1, cache.Get<Material>("ThirdParty/Quaternius/UniversalCharacter.glb.d/Materials/MI_Hair_1_LitNormalMap.xml"));
-        character.SetMaterial(2, cache.Get<Material>("ThirdParty/Quaternius/UniversalCharacter.glb.d/Materials/MI_Eyes_LitNormalMap.xml"));
+        character.SetModel(cache.Get<Model>("ThirdParty/Quaternius/TechnicalDummy.glb.d/Models/Mannequin.mdl"));
+        var characterMaterial = cache.Get<Material>("Materials/TechnicalDemo/Yellow.xml");
+        character.SetMaterial(0, characterMaterial);
+        character.SetMaterial(1, characterMaterial);
         character.SetCastShadows(true);
-        characterNode.CreateComponent<IKSolver>();
+        _ikSolver = characterNode.CreateComponent<IKSolver>();
+        _ikSolver.SetEnabled(false);
 
-        CreateLimb(characterNode, "clavicle_l", "upperarm_l", "lowerarm_l",
+        CreateLimb(characterNode, "upperarm_l", "lowerarm_l", "hand_l",
             "LeftHandTarget", "LeftElbowTarget");
         CreateLimb(characterNode, "upperarm_r", "lowerarm_r", "hand_r",
             "RightHandTarget", "RightElbowTarget");
@@ -116,7 +135,6 @@ sealed class InverseKinematicsApplication : Application
             "LeftFootTarget", "LeftKneeTarget");
         CreateLimb(characterNode, "thigh_r", "calf_r", "foot_r",
             "RightFootTarget", "RightKneeTarget");
-
         _cameraNode = _scene.CreateChild("Camera");
         _cameraNode.SetPosition(new Vector3f(0.0f, 1.8f, -5.0f));
         _cameraNode.LookAt(new Vector3f(0.0f, 1.1f, 0.0f));
@@ -134,8 +152,8 @@ sealed class InverseKinematicsApplication : Application
     {
         var secondBone = characterNode.GetChild(secondBoneName, true)!;
         var thirdBone = characterNode.GetChild(thirdBoneName, true)!;
-        CreateHandle(characterNode, targetName, thirdBone.WorldPosition);
-        CreateHandle(characterNode, bendTargetName, secondBone.WorldPosition);
+        var targetHandle = CreateHandle(characterNode, targetName, thirdBone);
+        var bendHandle = CreateHandle(characterNode, bendTargetName, secondBone);
 
         var solver = characterNode.CreateComponent<IKLimbSolver>();
         solver.FirstBoneName = firstBoneName;
@@ -143,17 +161,23 @@ sealed class InverseKinematicsApplication : Application
         solver.ThirdBoneName = thirdBoneName;
         solver.TargetName = targetName;
         solver.BendTargetName = bendTargetName;
+        _limbSolvers.Add(solver);
+        _handleSolvers.Add(targetHandle, solver);
+        _handleSolvers.Add(bendHandle, solver);
+        _effectorHandles.Add(targetHandle);
     }
 
-    private void CreateHandle(Node characterNode, string name, Vector3f worldPosition)
+    private Node CreateHandle(Node characterNode, string name, Node joint)
     {
         var handleNode = characterNode.CreateChild(name);
-        handleNode.SetWorldPosition(worldPosition);
+        handleNode.SetWorldPosition(joint.WorldPosition);
         handleNode.SetScale(0.16f);
         var handle = handleNode.CreateComponent<StaticModel>();
         handle.SetModel(Resources.Get<Model>("Models/Sphere.mdl"));
         handle.SetMaterial(Resources.Get<Material>("Materials/DefaultWhite.xml"));
         _handles.Add(handleNode);
+        _handleJoints.Add(handleNode, joint);
+        return handleNode;
     }
 
     protected override void Update(float timeStep)
@@ -172,6 +196,8 @@ sealed class InverseKinematicsApplication : Application
             else
                 UpdateDrag();
         }
+        else
+            SyncHandlesToJoints();
     }
 
     private void BeginDrag()
@@ -194,6 +220,7 @@ sealed class InverseKinematicsApplication : Application
             return;
 
         _draggedHandle = node;
+        _dragTargetPosition = node.WorldPosition;
         _dragPlane = new Plane(_cameraNode.WorldDirection, node.WorldPosition);
         _outlineGroup!.ClearDrawables();
         _outlineGroup.AddDrawable(node.GetComponent<StaticModel>()!);
@@ -204,36 +231,91 @@ sealed class InverseKinematicsApplication : Application
         var ray = _cameraNode!.GetComponent<Camera>()!.GetScreenRayFromMouse();
         var distance = ray.HitDistance(_dragPlane);
         if (!float.IsPositiveInfinity(distance))
-            _draggedHandle!.SetWorldPosition(ray.Origin + ray.Direction * distance);
+        {
+            _dragTargetPosition = ray.Origin + ray.Direction * distance;
+            var delta = _dragTargetPosition - _draggedHandle!.WorldPosition;
+            if (delta.LengthSquared <= MathDefs.Epsilon * MathDefs.Epsilon)
+                return;
+
+            var selectedSolver = _handleSolvers[_draggedHandle];
+            for (var i = 0; i < _limbSolvers.Count; ++i)
+                _limbSolvers[i].PositionWeight = ReferenceEquals(_limbSolvers[i], selectedSolver) ? 1.0f : 0.0f;
+            _draggedHandle.SetWorldPosition(_dragTargetPosition);
+            _ikSolver!.SetEnabled(true);
+        }
     }
 
     private void EndDrag()
     {
+        SyncHandlesToJoints();
+        _ikSolver!.SetEnabled(false);
         _draggedHandle = null;
         _outlineGroup!.ClearDrawables();
+    }
+
+    private void SyncHandlesToJoints()
+    {
+        foreach (var (handle, joint) in _handleJoints)
+            handle.SetWorldPosition(joint.WorldPosition);
+    }
+
+    private void OnIKPostSolve()
+    {
+        if (_draggedHandle is not null && _effectorHandles.Contains(_draggedHandle))
+        {
+            var draggedJoint = _handleJoints[_draggedHandle];
+            var residual = _dragTargetPosition - draggedJoint.WorldPosition;
+            if (residual.LengthSquared > 0.001f * 0.001f)
+                _characterNode!.SetWorldPosition(_characterNode.WorldPosition + residual);
+        }
+        SyncHandlesToJoints();
+        _ikSolver!.SetEnabled(false);
     }
 
     protected override void Stop()
     {
         _outlineGroup?.ClearDrawables();
         _handles.Clear();
+        _limbSolvers.Clear();
+        _handleJoints.Clear();
+        _handleSolvers.Clear();
+        _effectorHandles.Clear();
         _scene?.Dispose();
         _scene = null;
+        _characterNode = null;
+        _ikSolver = null;
         _cameraNode = null;
         _octree = null;
         _outlineGroup = null;
         _draggedHandle = null;
     }
 
-    private static void DrawInstructions()
+    private void DrawInstructions()
     {
         var windowOpen = true;
+        ImGui.SetNextWindowPos(new Vector2f(10.0f, 10.0f), ImGuiCond.ImGuiCondAlways);
         if (ImGui.Begin("Inverse Kinematics"u8, ref windowOpen,
-            ImGuiWindowFlags.ImGuiWindowFlagsNoSavedSettings))
+            ImGuiWindowFlags.ImGuiWindowFlagsNoResize | ImGuiWindowFlags.ImGuiWindowFlagsNoSavedSettings))
         {
-            ImGui.TextUnformatted("Drag the joint spheres with the left mouse button"u8);
-            ImGui.TextUnformatted("Use WASD and the right mouse button to move the camera"u8);
+            for (var i = 0; i < 3; ++i)
+            {
+                ImGui.Image(_controlPrompts![i], PromptIconSize);
+                ImGui.SameLine();
+            }
+            DrawPrompt(_controlPrompts![3], "Move"u8);
+            DrawPrompt(_controlPrompts[4], "Look"u8);
+            DrawPrompt(_controlPrompts[5], "Drag joints"u8);
         }
         ImGui.End();
     }
+
+    private static void DrawPrompt(Texture2D texture, ReadOnlySpan<byte> label)
+    {
+        ImGui.Image(texture, PromptIconSize);
+        ImGui.SameLine();
+        Widgets.AlignTextToLastItem();
+        ImGui.TextUnformatted(label);
+    }
+
+    private static readonly Vector2f PromptIconSize = new(24.0f, 24.0f);
 }
