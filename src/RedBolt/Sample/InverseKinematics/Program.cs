@@ -9,13 +9,14 @@ using System.Collections.Generic;
 
 using RedBolt;
 using RedBolt.Bindings.DearImGui;
-using RedBolt.DearImGui;
 using RedBolt.Core;
+using RedBolt.DearImGui;
 using RedBolt.Engine;
 using RedBolt.Graphics;
 using RedBolt.IK;
 using RedBolt.Input;
 using RedBolt.Math;
+using RedBolt.RenderPipeline;
 using RedBolt.Scene;
 using Widgets = RedBolt.SystemUI.Widgets;
 
@@ -113,7 +114,6 @@ sealed class InverseKinematicsApplication : Application
         light.SetCastShadows(true);
         light.SetColor(new Color(0.5f, 0.5f, 0.5f));
         light.SetShadowBias(new BiasParameters(0.00025f, 0.5f));
-        light.SetShadowCascade(new CascadeParameters(10.0f, 50.0f, 200.0f, 0.0f, 0.8f));
 
         var characterNode = _scene.CreateChild("Character");
         _characterNode = characterNode;
@@ -139,7 +139,14 @@ sealed class InverseKinematicsApplication : Application
         _cameraNode.SetPosition(new Vector3f(0.0f, 1.8f, -5.0f));
         _cameraNode.LookAt(new Vector3f(0.0f, 1.1f, 0.0f));
         _cameraNode.CreateComponent<FreeFlyController>();
-        _cameraNode.CreateComponent<Camera>().SetFarClip(100.0f);
+        var camera = _cameraNode.CreateComponent<Camera>();
+        camera.SetFarClip(100.0f);
+        void UpdateShadowCascades() => light.SetShadowCascade(ShadowCascadeEstimator.Estimate(camera,
+            new Vector2i(Graphics.Width, Graphics.Height), new RenderPipelineSettings(),
+            new ShadowCascadeEstimateSettings(200.0f) { ShadowResolution = light.GetShadowResolution() }));
+        UpdateShadowCascades();
+        SubscribeToEvent<GraphicsEvents.ScreenModeEvent>(
+            (ref GraphicsEvents.ScreenModeEvent _) => UpdateShadowCascades());
     }
 
     private void CreateLimb(
