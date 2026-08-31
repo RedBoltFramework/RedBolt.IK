@@ -11,6 +11,6 @@
     "bin/SampleData.IK/**/*"
   ],
   "samples": [
-    { "id": "inverse-kinematics", "name": "Inverse Kinematics", "applicationType": "RedBolt.Sample.InverseKinematics.InverseKinematicsApplication", "source": "InverseKinematics", "mobileHelp": "Drag to look, use the direction pad to move, and drag IK handles directly.", "mobileMovement": "wasd" }
+    { "id": "inverse-kinematics", "name": "Inverse Kinematics", "applicationType": "RedBolt.Sample.InverseKinematics.InverseKinematicsApplication", "source": "InverseKinematics" }
   ]
 }
