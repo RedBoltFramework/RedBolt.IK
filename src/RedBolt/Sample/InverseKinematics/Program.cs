@@ -46,6 +46,7 @@ sealed class InverseKinematicsApplication : Application
     private Vector3f _dragTargetPosition;
     private Texture2D[]? _controlPrompts;
     private Plane _dragPlane;
+    private SampleInputMap? _sampleInput;
 
     public InverseKinematicsApplication()
     {
@@ -69,6 +70,8 @@ sealed class InverseKinematicsApplication : Application
 
     protected override void Start()
     {
+        _sampleInput = new SampleInputMap(movement: true);
+        _sampleInput.AddMouseButton("Drag", MouseButton.Left, ControllerButton.A, "DRAG");
         Context.RegisterSubsystem(new DearImGui((ImGuiConfigFlags)Engine.Parameters.DearImGuiFlags));
         SubscribeToEvent<DearImGuiEvents.EndRenderingDearImGuiEvent>(
             (ref DearImGuiEvents.EndRenderingDearImGuiEvent _) => DrawInstructions());
@@ -138,15 +141,10 @@ sealed class InverseKinematicsApplication : Application
         _cameraNode = _scene.CreateChild("Camera");
         _cameraNode.SetPosition(new Vector3f(0.0f, 1.8f, -5.0f));
         _cameraNode.LookAt(new Vector3f(0.0f, 1.1f, 0.0f));
-        _cameraNode.CreateComponent<FreeFlyController>();
+        _cameraNode.CreateComponent<FreeFlyController>().SetInputMap(_sampleInput!.Map);
         var camera = _cameraNode.CreateComponent<Camera>();
         camera.SetFarClip(100.0f);
-        void UpdateShadowCascades() => light.SetShadowCascade(ShadowCascadeEstimator.Estimate(camera,
-            new Vector2i(Graphics.Width, Graphics.Height), new RenderPipelineSettings(),
-            new ShadowCascadeEstimateSettings(200.0f) { ShadowResolution = light.GetShadowResolution() }));
-        UpdateShadowCascades();
-        SubscribeToEvent<GraphicsEvents.ScreenModeEvent>(
-            (ref GraphicsEvents.ScreenModeEvent _) => UpdateShadowCascades());
+        light.SetShadowCascade(new CascadeParameters(10.0f, 50.0f, 200.0f, 0.0f, 0.8f));
     }
 
     private void CreateLimb(
@@ -189,16 +187,20 @@ sealed class InverseKinematicsApplication : Application
 
     protected override void Update(float timeStep)
     {
-        if (Input.ExitRequested || Input.GetKeyPress(Key.Escape))
+        var sampleInput = _sampleInput!;
+        if (Input.ExitRequested || sampleInput.Pressed("Exit"))
+        {
             Exit();
+            return;
+        }
 
-        if (_draggedHandle is null && Input.GetMouseButtonPress(MouseButton.Left)
+        if (_draggedHandle is null && sampleInput.Pressed("Drag")
             && !ImGui.GetIO().WantCaptureMouse)
             BeginDrag();
 
         if (_draggedHandle is not null)
         {
-            if (!Input.GetMouseButtonDown(MouseButton.Left))
+            if (sampleInput.Evaluate("Drag") <= 0.0f)
                 EndDrag();
             else
                 UpdateDrag();
@@ -281,6 +283,8 @@ sealed class InverseKinematicsApplication : Application
 
     protected override void Stop()
     {
+        _sampleInput?.Dispose();
+        _sampleInput = null;
         _outlineGroup?.ClearDrawables();
         _handles.Clear();
         _limbSolvers.Clear();
@@ -295,6 +299,7 @@ sealed class InverseKinematicsApplication : Application
         _octree = null;
         _outlineGroup = null;
         _draggedHandle = null;
+        base.Stop();
     }
 
     private void DrawInstructions()
