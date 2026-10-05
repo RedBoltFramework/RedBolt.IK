@@ -80,7 +80,7 @@ public partial class RetargetAnimationsTransformer : BaseAssetPostTransformer
         targetAnimation.SetLength(task.SourceAnimation.Length);
         targetAnimation.SetName(task.TargetAnimationName);
         targetAnimation.SetAnimationName(task.SourceAnimation.AnimationName);
-        targetAnimation.CopyMetadata(task.SourceAnimation);
+        targetAnimation.SetMetadata(task.SourceAnimation.GetMetadata());
 
         var disposeTargetAnimation = true;
         try
