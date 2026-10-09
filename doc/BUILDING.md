@@ -18,4 +18,4 @@ dotnet build src/RedBolt/IK/RedBolt.IK.csproj \
 
 Use the same platform and architecture selection properties documented by the main RedBolt repository for Android, WebAssembly, and Windows builds.
 
-The build root is selected statically rather than recorded: inside the monorepo every entry point (solution or direct project) uses the monorepo `build/`, a standalone checkout uses its own `build/`, and `-p:RedBoltBuildRoot=<dir>` overrides both.
+The build root is selected statically rather than recorded: every entry point (solution or direct project) uses the `build/` directory beside the engine directory (the monorepo `build/` in the monorepo), and `-p:RedBoltBuildRoot=<dir>` overrides it.
