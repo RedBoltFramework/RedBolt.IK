@@ -14,8 +14,6 @@ For a copy, see <https://opensource.org/licenses/MIT> or the accompanying LICENS
     <RedBoltExternalModuleRoot>$(RedBoltIKRoot)</RedBoltExternalModuleRoot>
     <RedBoltExternalModuleName>RedBolt.IK</RedBoltExternalModuleName>
     <RedBoltExternalHasNative>false</RedBoltExternalHasNative>
-    <RedBoltExternalDesktopResourceRoot>$(RedBoltIKRoot)</RedBoltExternalDesktopResourceRoot>
-    <RedBoltExternalDesktopResourceName>IK</RedBoltExternalDesktopResourceName>
   </PropertyGroup>
   <Import Project="$(RedBoltRoot)/eng/RedBolt.ModuleBuild/Directory.Build.props" />
 </Project>
